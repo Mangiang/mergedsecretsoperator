@@ -16,6 +16,7 @@ class Secret:
         if 'labels' in meta:
             self.body.metadata['labels'] = {
                 key: val for key, val in meta['labels'].items()}
+            self.body.metadata['labels']['app.kubernetes.io/instance'] = 'merged-secret-operator'
         if 'annotations' in meta:
             self.body.metadata['annotations'] = {
                 key: val for key, val in meta['annotations'].items()}
