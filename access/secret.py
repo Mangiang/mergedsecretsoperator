@@ -16,7 +16,9 @@ def create_secret(body: V1Secret, logger: Logger) -> None:
     name = body.metadata['name']
     already_exists = False
     try:
+        logger.debug("Creating secret")
         v1.create_namespaced_secret(namespace, body)
+        logger.debug("Secret created")
     except ApiException as e:
         if e.reason == 'Conflict':
             logger.warn(
@@ -34,7 +36,9 @@ def update_secret(body: V1Secret, logger: Logger) -> None:
     namespace = body.metadata['namespace']
     name = body.metadata['name']
     try:
+        logger.debug("Patching secret")
         v1.patch_namespaced_secret(body.metadata['name'], namespace, body)
+        logger.debug("Secret patched")
     except ApiException as e:
         if e.reason == 'Conflict':
             logger.warn(
@@ -46,7 +50,9 @@ def update_secret(body: V1Secret, logger: Logger) -> None:
 
 def delete_secret(name: str, namespace: str, logger: Logger) -> None:
     try:
+        logger.debug("Deleting secret")
         v1.delete_namespaced_secret(name, namespace)
+        logger.debug("Secret deleted")
     except ApiException as e:
         if e.reason == 'Not Found':
             logger.warn(
@@ -58,6 +64,7 @@ def delete_secret(name: str, namespace: str, logger: Logger) -> None:
 
 def get_secret(name: str, namespace: str, logger: Logger) -> Optional[V1Secret]:
     try:
+        logger.debug("Reading secret")
         return v1.read_namespaced_secret(name, namespace)
     except ApiException as e:
         logger.error(e)
