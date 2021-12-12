@@ -20,6 +20,16 @@ steps:
         from_secret: GITHUB_REGISTRY_USERNAME
       password:
         from_secret: GITHUB_REGISTRY_TOKEN
+  - name: Download argocd cli
+    image: node:latest
+    commands:
+      - wget -O argocd https://$ARGOCD_SERVER/download/argocd-linux-amd64
+      - chmod +x argocd
+    volumes:
+      - name: crds
+        path: /argo
+    depends_on:
+      - Build and plublish docker image
   - name: Resync CRDS
     image: node:latest
     environment:
@@ -28,9 +38,57 @@ steps:
       ARGOCD_PASSWORD:
         from_secret: ARGOCD_PASSWORD
     commands:
-      - wget -O argocd https://$ARGOCD_SERVER/download/argocd-linux-amd64
-      - chmod +x argocd
-      - ./argocd login $ARGOCD_SERVER --username $ARGOCD_USERNAME --password $ARGOCD_PASSWORD
-      - ./argocd app sync merged-secrets-operator-crds
-      - ./argocd app sync merged-secrets-operator-rbac
-      - ./argocd app sync merged-secrets-operator-operator
+      - cp argocd /argo/argocd
+      - /argo/argocd login $ARGOCD_SERVER --username $ARGOCD_USERNAME --password $ARGOCD_PASSWORD
+      - /argo/argocd app sync merged-secrets-operator-crds
+      - /argo/argocd app wair merged-secrets-operator-crds
+    volumes:
+      - name: crds
+        path: /argo
+    depends_on:
+      - Download argocd cli
+  - name: Resync RBAC
+    image: node:latest
+    environment:
+      ARGOCD_USERNAME:
+        from_secret: ARGOCD_USERNAME
+      ARGOCD_PASSWORD:
+        from_secret: ARGOCD_PASSWORD
+    commands:
+      - cp argocd /argo/argocd
+      - /argo/argocd login $ARGOCD_SERVER --username $ARGOCD_USERNAME --password $ARGOCD_PASSWORD
+      - /argo/argocd app sync merged-secrets-operator-rbac
+      - /argo/argocd app wait merged-secrets-operator-rbac
+    volumes:
+      - name: rbac
+        path: /argo
+    depends_on:
+      - Download argocd cli
+  - name: Resync Operator
+    image: node:latest
+    environment:
+      ARGOCD_USERNAME:
+        from_secret: ARGOCD_USERNAME
+      ARGOCD_PASSWORD:
+        from_secret: ARGOCD_PASSWORD
+    commands:
+      - cp argocd /argo/argocd
+      - /argo/argocd login $ARGOCD_SERVER --username $ARGOCD_USERNAME --password $ARGOCD_PASSWORD
+      - /argo/argocd app sync merged-secrets-operator-operator
+      - /argo/argocd app wait merged-secrets-operator-operator
+    volumes:
+      - name: operator
+        path: /argo
+    depends_on:
+      - Download argocd cli
+
+volumes:
+  - name: crds
+    temp:
+      medium: memory
+  - name: rbac
+    temp:
+      medium: memory
+  - name: operator
+    temp:
+      medium: memory
