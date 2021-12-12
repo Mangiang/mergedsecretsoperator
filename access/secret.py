@@ -56,5 +56,9 @@ def get_secret(name: str, namespace: str, logger: Logger) -> Optional[V1Secret]:
     try:
         return v1.read_namespaced_secret(name, namespace)
     except ApiException as e:
+        if e.reason == 'Not Found':
+            logger.warn(
+                f"{name} does not exist in namespace {namespace}")
+            return
         logger.error(e)
         traceback.print_exc()
