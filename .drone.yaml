@@ -1,0 +1,32 @@
+kind: pipeline
+type: kubernetes
+name: default
+
+environment:
+  ARGOCD_SERVER: argo.arthur-joly.fr
+  APP_NAME: merged-secrets-operator
+
+steps:
+  - name: Build and plublish docker image
+    image: plugins/buildah-docker:1.2.0-linux-amd64
+    privileged: true
+    settings:
+      tags: latest
+      registry: ghcr.io
+      repo: ghcr.io/mangiang/mergedsecretsoperator
+      username:
+        from_secret: GITHUB_REGISTRY_USERNAME
+      password:
+        from_secret: GITHUB_REGISTRY_TOKEN
+  - name: Resync Service
+    image: node:latest
+    environment:
+      ARGOCD_USERNAME:
+        from_secret: ARGOCD_USERNAME
+      ARGOCD_PASSWORD:
+        from_secret: ARGOCD_PASSWORD
+    commands:
+      - wget -O argocd https://$ARGOCD_SERVER/download/argocd-linux-amd64
+      - chmod +x argocd
+      - ./argocd login $ARGOCD_SERVER --username $ARGOCD_USERNAME --password $ARGOCD_PASSWORD
+      - ./argocd app sync $APP_NAME

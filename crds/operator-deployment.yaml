@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: merge-secrets-operator
+  namespace: mergedsecrets
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      application: merge-secrets-operator
+  template:
+    metadata:
+      labels:
+        application: merge-secrets-operator
+    spec:
+      serviceAccountName: merged-secrets
+      containers:
+        - name: merged-secrets
+          image: ghcr.io/mangiang/mergedsecretsoperator:latest

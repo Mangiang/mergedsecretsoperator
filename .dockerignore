@@ -1,0 +1,8 @@
+*
+!Dockerfile
+!access
+!data
+!utils
+!app.py
+!requirements.txt
+!start.sh
