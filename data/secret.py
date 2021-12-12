@@ -1,6 +1,8 @@
 from typing import Any, Optional
 from kopf._core.actions.execution import Logger
 
+from access.secret import create_secret
+
 
 class Secret:
     def __init__(self, meta: Any, spec: dict[str, dict[str, str]], logger: Logger) -> 'Secret':
@@ -55,6 +57,11 @@ class Secret:
         create_secret(self.body, self.logger)
 
     def update(self, logger: Logger) -> None:
+        from access.secret import SecretOperationResult
         from access.secret import update_secret
         self.update_data()
-        update_secret(self.body, self.logger)
+        result: SecretOperationResult = update_secret(self.body, self.logger)
+        if result == SecretOperationResult.DOES_NOT_EXIST:
+            self.logger.debug(
+                f"The secret {self.body.metadata['name']}.{self.body.metadata['namespace']} will be recreated")
+            create_secret(self.body, self.logger)
