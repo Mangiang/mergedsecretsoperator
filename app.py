@@ -24,7 +24,7 @@ def create(spec, name, meta, status, logger: Logger, **kwargs):
     for dependency in secrets[full_name].depends_on:
         if dependency not in secrets_dependency:
             secrets_dependency[dependency] = set([secrets[full_name]])
-        elif len([sec for sec in secrets_dependency[dependency] if f"{sec.meta['name']}.{sec.meta['namespace']}" == full_name]) == 0:
+        elif len([sec for sec in secrets_dependency[dependency] if f"{sec.body.metadata['name']}.{sec.body.metadata['namespace']}" == full_name]) == 0:
             secrets_dependency[dependency].add(secrets[full_name])
 
     secrets[full_name].create(logger)
