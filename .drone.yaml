@@ -2,9 +2,11 @@ kind: pipeline
 type: kubernetes
 name: default
 
+concurrency:
+  limit: 1
+
 environment:
   ARGOCD_SERVER: argo.arthur-joly.fr
-  APP_NAME: merged-secrets-operator
 
 steps:
   - name: Build and plublish docker image
@@ -18,6 +20,30 @@ steps:
         from_secret: GITHUB_REGISTRY_USERNAME
       password:
         from_secret: GITHUB_REGISTRY_TOKEN
+  - name: Resync CRDS
+    image: node:latest
+    environment:
+      ARGOCD_USERNAME:
+        from_secret: ARGOCD_USERNAME
+      ARGOCD_PASSWORD:
+        from_secret: ARGOCD_PASSWORD
+    commands:
+      - wget -O argocd https://$ARGOCD_SERVER/download/argocd-linux-amd64
+      - chmod +x argocd
+      - ./argocd login $ARGOCD_SERVER --username $ARGOCD_USERNAME --password $ARGOCD_PASSWORD
+      - ./argocd app sync merged-secrets-operator-crds
+  - name: Resync RBAC
+    image: node:latest
+    environment:
+      ARGOCD_USERNAME:
+        from_secret: ARGOCD_USERNAME
+      ARGOCD_PASSWORD:
+        from_secret: ARGOCD_PASSWORD
+    commands:
+      - wget -O argocd https://$ARGOCD_SERVER/download/argocd-linux-amd64
+      - chmod +x argocd
+      - ./argocd login $ARGOCD_SERVER --username $ARGOCD_USERNAME --password $ARGOCD_PASSWORD
+      - ./argocd app sync merged-secrets-operator-rbac
   - name: Resync Service
     image: node:latest
     environment:
@@ -29,4 +55,4 @@ steps:
       - wget -O argocd https://$ARGOCD_SERVER/download/argocd-linux-amd64
       - chmod +x argocd
       - ./argocd login $ARGOCD_SERVER --username $ARGOCD_USERNAME --password $ARGOCD_PASSWORD
-      - ./argocd app sync $APP_NAME
+      - ./argocd app sync merged-secrets-operator-operator
