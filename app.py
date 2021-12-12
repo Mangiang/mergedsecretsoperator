@@ -8,7 +8,7 @@ from utils.utils import print_info, get_namespace
 context = 'mergedsecrets.app'
 
 secrets: dict[str, Secret] = {}
-secrets_dependency: dict[str, list[Secret]] = {}
+secrets_dependency: dict[str, set[Secret]] = {}
 
 crd_group = 'arthur-joly.fr'
 crd_version = 'v1'
@@ -23,9 +23,9 @@ def create(spec, name, meta, status, logger: Logger, **kwargs):
 
     for dependency in secrets[full_name].depends_on:
         if dependency not in secrets_dependency:
-            secrets_dependency[dependency] = [secrets[full_name]]
+            secrets_dependency[dependency] = set([secrets[full_name]])
         else:
-            secrets_dependency[dependency].append(secrets[full_name])
+            secrets_dependency[dependency].add(secrets[full_name])
 
     secrets[full_name].create(logger)
     logger.debug(f"Created {full_name}")
