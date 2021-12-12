@@ -1,0 +1,2 @@
+kopf == 1.35.3
+kubernetes == 20.13.0

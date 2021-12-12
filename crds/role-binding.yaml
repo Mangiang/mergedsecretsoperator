@@ -1,0 +1,13 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: merged-secrets
+  namespace: mergedsecrets
+subjects:
+  - kind: ServiceAccount
+    name: merged-secrets
+    namespace: mergedsecrets
+roleRef:
+  kind: Role
+  name: merged-secrets
+  apiGroup: rbac.authorization.k8s.io
