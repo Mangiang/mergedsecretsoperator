@@ -19,5 +19,6 @@ spec:
       containers:
         - name: merged-secrets
           image: ghcr.io/mangiang/mergedsecretsoperator:latest
+          imagePullPolicy: Always
       imagePullSecrets:
         - name: regcred
