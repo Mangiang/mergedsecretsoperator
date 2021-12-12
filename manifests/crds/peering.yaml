@@ -53,7 +53,6 @@ metadata:
 apiVersion: kopf.dev/v1
 kind: KopfPeering
 metadata:
-  namespace: mergedsecrets
   name: default
 ---
 

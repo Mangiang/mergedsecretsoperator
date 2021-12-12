@@ -1,6 +1,5 @@
 name: mergedsecret
 image: okteto/python:3
-namespace: mergedsecrets
 command: bash
 securityContext:
   capabilities:
