@@ -16,6 +16,19 @@ rules:
       - delete
       - watch
 
+  - apiGroups:
+      - ""
+    resources:
+      - events
+    verbs:
+      - get
+      - list
+      - create
+      - update
+      - patch
+      - delete
+      - watch
+
   # Merged secrets
   - apiGroups: ["arthur-joly.fr"]
     resources: ["mergedsecrets"]
