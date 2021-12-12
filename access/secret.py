@@ -44,6 +44,10 @@ def update_secret(body: V1Secret, logger: Logger) -> None:
             logger.warn(
                 f"{name} already exists in namespace {namespace}")
             return
+        if e.reason == 'Not Found':
+            logger.warn(
+                f"{name} does not exist in namespace {namespace}")
+            return
         logger.error(e)
         traceback.print_exc()
 
