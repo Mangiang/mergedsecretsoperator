@@ -1,7 +1,14 @@
-https://okteto.com/docs/reference/manifest/
+# Merged Secrets Operator
 
-https://github.com/nolar/kopf
+A simple Operator used to create secrets based on other secrets
 
-https://kopf.readthedocs.io/en/stable/walkthrough/starting/
+## How to run
 
 `python -m kopf run app.py --verbose`
+
+## Links
+ * Okteto
+    * https://okteto.com/docs/reference/manifest/
+ * Kopf
+    * https://github.com/nolar/kopf
+    * https://kopf.readthedocs.io/en/stable/walkthrough/starting/
