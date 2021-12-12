@@ -32,6 +32,8 @@ steps:
       - chmod +x argocd
       - ./argocd login $ARGOCD_SERVER --username $ARGOCD_USERNAME --password $ARGOCD_PASSWORD
       - ./argocd app sync merged-secrets-operator-crds
+    depends_on:
+      - Build and plublish docker image
   - name: Resync RBAC
     image: node:latest
     environment:
@@ -44,7 +46,9 @@ steps:
       - chmod +x argocd
       - ./argocd login $ARGOCD_SERVER --username $ARGOCD_USERNAME --password $ARGOCD_PASSWORD
       - ./argocd app sync merged-secrets-operator-rbac
-  - name: Resync Service
+    depends_on:
+      - Build and plublish docker image
+  - name: Resync Operator
     image: node:latest
     environment:
       ARGOCD_USERNAME:
@@ -56,3 +60,5 @@ steps:
       - chmod +x argocd
       - ./argocd login $ARGOCD_SERVER --username $ARGOCD_USERNAME --password $ARGOCD_PASSWORD
       - ./argocd app sync merged-secrets-operator-operator
+    depends_on:
+      - Build and plublish docker image
