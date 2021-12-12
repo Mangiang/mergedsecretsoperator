@@ -19,8 +19,7 @@ crd_name = 'mergedsecrets'
 @kopf.on.create(crd_group, crd_version, crd_name)
 def create(spec, name, meta, status, logger: Logger, **kwargs):
     full_name = f"{name}.{meta['namespace']}"
-    secrets[full_name] = Secret(
-        name, get_namespace(meta), spec, logger).update_data()
+    secrets[full_name] = Secret(meta, spec, logger).update_data()
 
     for dependency in secrets[full_name].depends_on:
         if dependency not in secrets_dependency:
