@@ -1,9 +1,8 @@
-from logging import log
 import kopf
 from kopf._core.actions.execution import Logger
 from data.secret import Secret
-from access.secret import create_secret, delete_secret, get_secret, update_secret
-from utils.utils import print_info, get_namespace
+from access.secret import delete_secret
+from utils.utils import get_namespace
 
 context = 'mergedsecrets.app'
 
@@ -24,10 +23,10 @@ def create(spec, name, meta, status, logger: Logger, **kwargs):
     for dependency in secrets[full_name].depends_on:
         if dependency not in secrets_dependency:
             secrets_dependency[dependency] = set([secrets[full_name]])
-        elif len([sec for sec in secrets_dependency[dependency] if f"{sec.body.metadata['name']}.{sec.body.metadata['namespace']}" == full_name]) == 0:
+        else:
             secrets_dependency[dependency].add(secrets[full_name])
 
-    secrets[full_name].create(logger)
+    secrets[full_name].apply(logger)
     logger.debug(f"Created {full_name}")
 
     if full_name in secrets_dependency:
@@ -49,7 +48,7 @@ def update(spec, name, meta, status, logger: Logger, **kwargs):
         create(spec, name, meta, status, logger)
         return
 
-    secrets[full_name].update_data(spec).update(logger)
+    secrets[full_name].update_data(spec).apply(logger)
     logger.debug(f"Updated {full_name}")
 
 
@@ -57,4 +56,8 @@ def update(spec, name, meta, status, logger: Logger, **kwargs):
 def delete(spec, name, meta, status, logger: Logger, **kwargs):
     full_name = f"{name}.{meta['namespace']}"
     delete_secret(name, get_namespace(meta), logger)
+    del secrets[full_name]
+    for dep_key in secrets_dependency:
+        if full_name in secrets_dependency[dep_key]:
+            secrets_dependency[dep_key].remove(full_name)
     logger.debug(f"Deleted {full_name}")

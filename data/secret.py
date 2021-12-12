@@ -52,16 +52,17 @@ class Secret:
 
         return self
 
-    def create(self, logger: Logger) -> None:
-        from access.secret import create_secret
-        create_secret(self.body, self.logger)
-
-    def update(self, logger: Logger) -> None:
+    def apply(self) -> None:
         from access.secret import SecretOperationResult
         from access.secret import update_secret
         self.update_data()
         result: SecretOperationResult = update_secret(self.body, self.logger)
         if result == SecretOperationResult.DOES_NOT_EXIST:
             self.logger.debug(
-                f"The secret {self.body.metadata['name']}.{self.body.metadata['namespace']} will be recreated")
+                f"The secret {self.body.metadata['name']}.{self.body.metadata['namespace']} will be created")
             create_secret(self.body, self.logger)
+
+    def __eq__(self, __o: object) -> bool:
+        full_name = f"{self.body.metadata['name']}.{self.body.metadata['namespace']}"
+        other_full_name = f"{__o.body.metadata['name']}.{__o.body.metadata['namespace']}"
+        return full_name == other_full_name
