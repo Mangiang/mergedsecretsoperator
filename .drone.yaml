@@ -28,10 +28,10 @@ steps:
       ARGOCD_PASSWORD:
         from_secret: ARGOCD_PASSWORD
     commands:
-      - wget -O argo/argocd https://$ARGOCD_SERVER/download/argocd-linux-amd64
-      - chmod +x argo/argocd
-      - argo/argocd login $ARGOCD_SERVER --username $ARGOCD_USERNAME --password $ARGOCD_PASSWORD
-      - argo/argocd app sync merged-secrets-operator-crds
+      - wget -O /argo/argocd https://$ARGOCD_SERVER/download/argocd-linux-amd64
+      - chmod +x /argo/argocd
+      - /argo/argocd login $ARGOCD_SERVER --username $ARGOCD_USERNAME --password $ARGOCD_PASSWORD
+      - /argo/argocd app sync merged-secrets-operator-crds
     volumes:
       - name: crds
         path: /argo
@@ -45,10 +45,10 @@ steps:
       ARGOCD_PASSWORD:
         from_secret: ARGOCD_PASSWORD
     commands:
-      - wget -O argo/argocd https://$ARGOCD_SERVER/download/argocd-linux-amd64
-      - chmod +x argo/argocd
-      - argo/argocd login $ARGOCD_SERVER --username $ARGOCD_USERNAME --password $ARGOCD_PASSWORD
-      - argo/argocd app sync merged-secrets-operator-rbac
+      - wget -O /argo/argocd https://$ARGOCD_SERVER/download/argocd-linux-amd64
+      - chmod +x /argo/argocd
+      - /argo/argocd login $ARGOCD_SERVER --username $ARGOCD_USERNAME --password $ARGOCD_PASSWORD
+      - /argo/argocd app sync merged-secrets-operator-rbac
     volumes:
       - name: crds
         path: /argo
@@ -62,10 +62,10 @@ steps:
       ARGOCD_PASSWORD:
         from_secret: ARGOCD_PASSWORD
     commands:
-      - wget -O argocd https://$ARGOCD_SERVER/download/argocd-linux-amd64
-      - chmod +x argocd
-      - argo/argocd login $ARGOCD_SERVER --username $ARGOCD_USERNAME --password $ARGOCD_PASSWORD
-      - argo/argocd app sync merged-secrets-operator-operator
+      - wget -O /argo/argocd https://$ARGOCD_SERVER/download/argocd-linux-amd64
+      - chmod +x /argo/argocd
+      - /argo/argocd login $ARGOCD_SERVER --username $ARGOCD_USERNAME --password $ARGOCD_PASSWORD
+      - /argo/argocd app sync merged-secrets-operator-operator
     volumes:
       - name: operator
         path: /argo
