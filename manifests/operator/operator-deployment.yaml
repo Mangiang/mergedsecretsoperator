@@ -20,5 +20,9 @@ spec:
         - name: merged-secrets
           image: ghcr.io/mangiang/mergedsecretsoperator:latest
           imagePullPolicy: Always
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
       imagePullSecrets:
         - name: regcred
