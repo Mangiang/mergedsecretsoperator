@@ -66,3 +66,6 @@ class Secret:
         full_name = f"{self.body.metadata['name']}.{self.body.metadata['namespace']}"
         other_full_name = f"{__o.body.metadata['name']}.{__o.body.metadata['namespace']}"
         return full_name == other_full_name
+
+    def __hash__(self):
+        return id(self)

@@ -5,8 +5,6 @@ from kubernetes.client.models.v1_secret import V1Secret
 from kubernetes.client.rest import ApiException
 from kubernetes import client, config
 import traceback
-import sys
-from data.secret import Secret
 
 config.load_incluster_config()
 v1 = client.CoreV1Api()
